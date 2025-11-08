@@ -30,7 +30,18 @@ async function run() {
     try {
         await client.connect();
 
-        const db = client.db('hasan865_db');
+        const db = client.db('StudyPilot');
+         const coursesCollection = db.collection('courses');
+
+
+          app.get('/courses', async (req, res) => {
+          
+
+            const cursor = coursesCollection.find();
+            const result = await cursor.toArray();
+            console.log(result)
+            res.send(result)
+        });
         
 
         await client.db("admin").command({ ping: 1 });
