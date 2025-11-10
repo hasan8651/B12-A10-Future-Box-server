@@ -58,21 +58,39 @@ async function run() {
       res.send(result);
     });
 
-
-       app.post('/courses', async (req, res) => {
+    app.post("/courses", async (req, res) => {
       const newCourse = req.body;
       const result = await coursesCollection.insertOne(newCourse);
       res.send(result);
     });
 
+    app.put("/courses/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedCourse = req.body;
+      const course = {
+        $set: {
+          title: updatedCourse.title,
+          imageURL: updatedCourse.imageURL,
+          price: updatedCourse.price,
+          duration: updatedCourse.duration,
+          category: updatedCourse.category,
+          description: updatedCourse.description,
+          isFeatured: updatedCourse.isFeatured,
+          email: updatedCourse.email,
+        },
+      };
+      const result = await coursesCollection.updateOne(filter, course, options);
+      res.send(result);
+    });
 
-    app.delete('/courses/:id', async (req, res) => {
+    app.delete("/courses/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await coursesCollection.deleteOne(query);
       res.send(result);
     });
-
 
     await client.db("admin").command({ ping: 1 });
     console.log(
