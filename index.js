@@ -28,10 +28,11 @@ app.get("/", (req, res) => {
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
 
     const db = client.db("StudyPilot");
     const coursesCollection = db.collection("courses");
+    const enrolledCollection = db.collection("enrolled-courses");
 
     app.get("/courses", async (req, res) => {
       const cursor = coursesCollection.find();
@@ -64,6 +65,12 @@ async function run() {
       res.send(result);
     });
 
+      app.post("/my-enrolled", async (req, res) => {
+      const enrolledtCourse = req.body;
+      const result = await enrolledCollection.insertOne(enrolledtCourse);
+      res.send(result);
+    });
+
     app.put("/courses/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -92,7 +99,7 @@ async function run() {
       res.send(result);
     });
 
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
