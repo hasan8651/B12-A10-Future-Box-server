@@ -28,7 +28,6 @@ app.get("/", (req, res) => {
 async function run() {
   try {
     // await client.connect();
-
     const db = client.db("StudyPilot");
     const coursesCollection = db.collection("courses");
     const enrolledCollection = db.collection("enrolled-courses");
@@ -36,13 +35,13 @@ async function run() {
     app.get("/courses", async (req, res) => {
       const cursor = coursesCollection.find();
       const result = await cursor.toArray();
-          res.send(result);
+      res.send(result);
     });
 
     app.get("/popular-courses", async (req, res) => {
+      const isFeatured = req.query.isFeatured;
       const result = await coursesCollection
-        .find()
-        .sort({ price: "asc" })
+        .find({ isFeatured: true })
         .limit(6)
         .toArray();
       res.send(result);
@@ -52,10 +51,10 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await coursesCollection.findOne(query);
-         res.send(result);
+      res.send(result);
     });
 
-       app.get("/my-enrolled", async (req, res) => {
+    app.get("/my-enrolled", async (req, res) => {
       const cursor = enrolledCollection.find();
       const result = await cursor.toArray();
       res.send(result);
@@ -67,7 +66,7 @@ async function run() {
       res.send(result);
     });
 
-      app.post("/my-enrolled", async (req, res) => {
+    app.post("/my-enrolled", async (req, res) => {
       const enrolledtCourse = req.body;
       const result = await enrolledCollection.insertOne(enrolledtCourse);
       res.send(result);
